@@ -1,0 +1,61 @@
+{
+  "name": "test-docker",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/test-docker/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/test-docker",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/test-docker/src/main.ts",
+        "tsConfig": "apps/test-docker/tsconfig.app.json",
+        "assets": ["apps/test-docker/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "generateLockfile": true,
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "test-docker:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "test-docker:build:development"
+        },
+        "production": {
+          "buildTarget": "test-docker:build:production"
+        }
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/test-docker/Dockerfile . -t test-docker"
+    }
+  }
+}
